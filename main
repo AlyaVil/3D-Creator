@@ -1,0 +1,49 @@
+let _gl, gl;
+let lapse = 0;
+let _if = 1;
+let _skbg = 1;
+let _node; 
+let buttonLayer; 
+let buttons = []; 
+
+// tessellation
+const MINIMUM_DISTANCE = 4;
+let _drawer;
+let _tessellator;
+
+let hui;
+
+let buttonRecipe =
+    [{name:"delete", x:30, y:60, w:90, h:20, col:[78,100,100]},  // 0
+    {name:"clear", x:30, y:90, w:90, h:20, col:[84,100,100]},
+    {name:"create", x:30, y:140, w:90, h:40, col:[55,100,100]},
+    {name:"reset", x:30,y:190, w:90, h:20, col:[45,100,100]},
+    {name:"BOARD", x:30, y:240, w:90, h:20, col:[96,100,30]},    // 4
+    {name:"BEVEL", x:30, y:270, w:90, h:20, col:[6,100,30]},
+    {name:"DIMPLE", x:30, y:300, w:90, h:20, col:[16,100,30]},
+    {name:"SPLIT", x:30, y:330, w:90, h:20, col:[26,100,30]},
+    {name:"FIX", x:140, y:240, w:90, h:20, col:[46, 100, 30]},  
+    {name:"ROLLING", x:140, y:270, w:90, h:20, col:[56, 100, 30]},
+    {name:"MOVE", x:140, y:300, w:90, h:20, col:[40, 100, 30]}, // 10
+    {name:"BOARD", x:30, y:240, w:90, h:20, col:[96,100,100]},   // 11
+    {name:"BEVEL", x:30, y:270, w:90, h:20, col:[6,100,100]},
+    {name:"DIMPLE", x:30, y:300, w:90, h:20, col:[16,100,100]},
+    {name:"SPLIT", x:30, y:330, w:90, h:20, col:[26,100,100]},
+    {name:"FIX", x:140, y:240, w:90, h:20, col:[46, 100, 100]},
+    {name:"ROLLING", x:140, y:270, w:90, h:20, col:[56, 100, 100]},
+    {name:"MOVE", x:140, y:300, w:90, h:20, col:[40, 100, 100]},   // 17
+    {name:"CAMERA", x:140, y:60, w:90, h:50, col:[52, 100, 30]}, // 18
+    {name:"CAMERA", x:140, y:60, w:90, h:50, col:[52, 100, 100]} // 19
+   ];
+
+// x:<235,y:55～125
+
+let cameraFlag = false;
+
+
+const MODE_BOARD = 0;
+const MODE_BEVEL = 1;
+const MODE_DIMPLE = 2;
+const MODE_SPLIT = 3;
+let sliderImg; 
+let sliderFlag = [false, false]; 
