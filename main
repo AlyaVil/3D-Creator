@@ -47,3 +47,52 @@ const MODE_DIMPLE = 2;
 const MODE_SPLIT = 3;
 let sliderImg; 
 let sliderFlag = [false, false]; 
+
+// ACTION TYPE.
+const ACTION_FIX = 0; 
+const ACTION_ROLLING = 1; 
+const ACTION_MOVE = 2; 
+
+
+let posR = 320*Math.sqrt(3);
+let defaultPosR = 320 * Math.sqrt(3);
+let posTheta = Math.PI * 0.4;
+let posPhi = Math.PI*0.66;
+let focusX = 0;
+let focusY = 0;
+let eyeVector, toCenterVector, sideVector, upVector;
+
+// --------------------------------------------------------------- //
+// shader.
+
+let lightVert=
+"precision mediump float;" +
+
+"attribute vec3 aPosition;" +
+"attribute vec4 aVertexColor;" +
+"attribute vec3 aNormal;" +
+
+"uniform vec3 uAmbientColor;" +
+
+"uniform mat4 uModelViewMatrix;" +
+"uniform mat4 uProjectionMatrix;" +
+"uniform mat3 uNormalMatrix;" +
+
+"varying vec4 vVertexColor;" +
+"varying vec3 vNormal;" +
+"varying vec3 vViewPosition;" +
+"varying vec3 vAmbientColor;" +
+
+"void main(void){" +
+ 
+"  vec4 viewModelPosition = uModelViewMatrix * vec4(aPosition, 1.0);" +
+
+  // Pass varyings to fragment shader
+"  vViewPosition = viewModelPosition.xyz;" +
+"  gl_Position = uProjectionMatrix * viewModelPosition;" +
+
+"  vNormal = uNormalMatrix * aNormal;" +
+"  vVertexColor = aVertexColor;" +
+
+"  vAmbientColor = uAmbientColor;" +
+"}";
