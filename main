@@ -151,3 +151,50 @@ let lightFrag =
 // include lighting.glsl
 "uniform vec4 uMonoColor;" +
 "uniform int uUseColorFlag;" + // 0:vertex. 1:mono.
+
+"varying vec4 vVertexColor;" +
+"varying vec3 vNormal;" +
+"varying vec3 vViewPosition;" +
+"varying vec3 vAmbientColor;" +
+// メインコード
+"void main(void){" +
+"  vec3 diffuse = totalLight(vViewPosition, normalize(vNormal));" +
+"  vec4 col = vec4(1.0);" +
+
+"  if(uUseColorFlag == USE_MONO_COLOR) {" +
+"    col = uMonoColor;" +  // uMonoColor
+"  }" +
+"  if(uUseColorFlag == USE_VERTEX_COLOR){" +
+"    col = vVertexColor;" + 
+"  }" +
+  // diffuseの分
+"  col.rgb *= (diffuse + vAmbientColor);" +
+"  gl_FragColor = col;" +
+"}";
+
+let myVert=
+"precision mediump float;" +
+"attribute vec3 aPosition;" +
+"attribute vec4 aVertexColor;" +
+"varying vec4 vVertexColor;" +
+"uniform mat4 uModelViewMatrix;" +
+"uniform mat4 uProjectionMatrix;" +
+"void main(){" +
+"  vec4 viewModelPosition = uModelViewMatrix * vec4(aPosition, 1.0);" +
+"  gl_Position = uProjectionMatrix * viewModelPosition;" +
+"  vVertexColor = aVertexColor;" +
+"}";
+
+let myFrag=
+"precision mediump float;" +
+"varying vec4 vVertexColor;" +
+"void main(){" +
+"  gl_FragColor = vVertexColor;" +
+"}";
+
+const skyVert =
+"precision mediump float;" +
+"attribute vec3 aPosition;" +
+"void main(){" +
+"  gl_Position = vec4(aPosition, 1.0);" +
+"}";
