@@ -252,3 +252,60 @@ const skyFrag =
 "  vec3 col = getBackgroundColor(cur, ray);" +
 "  gl_FragColor = vec4(col, 1.0);" +
 "}";
+
+
+function setup() {
+  _gl = createCanvas(1112, windowHeight, WEBGL);
+  pixelDensity(1);
+  gl = _gl.GL; 
+
+  
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.FRONT);
+  disableScroll();
+	
+  textureFloatCheck();
+  Uint32ArrayCheck();
+	noStroke();
+	
+	// Add a button to save screenshots
+	button = createButton('SAVE');
+  button.position(180, 330);
+	button.size(90,20);
+  button.mousePressed(saver);
+	button.style("padding", "0px 0");
+	button.style('text-align','left');
+  button.style("color", "#bbbbbb");
+  button.style("background-color", "#dd0000");
+  button.style("font-size", 18+"px");
+	button.style("border", "0");
+  button.style("font-weight", "bold"); // bold
+  button.style("font-family", "Helvetica,sans-serif");
+	
+  // Add a button to toggle interface on-off
+	button2 = createButton('INTRFACE');
+  button2.position(180, 140);
+	button2.size(90,20);
+  button2.mousePressed(inter);
+	button2.style("padding", "0px 0");
+	button2.style('text-align','left');
+  button2.style("color", "#cccccc");
+  button2.style("background-color", "#dd7700");
+  button2.style("font-size", 18+"px");
+	button2.style("border", "0");
+  //button2.style("font-weight", "bold"); // bold
+  button2.style("font-family", "Helvetica,sans-serif");
+	
+	// Add a button to toggle sky / white bg
+	button3 = createButton('SKY/WHT');
+  button3.position(180, 190);
+	button3.size(90,20);
+  button3.mousePressed(skywhite);
+	button3.style("padding", "0px 0");
+	button3.style('text-align','left');
+  button3.style("color", "#444444");
+  button3.style("background-color", "#bbbb00");
+  button3.style("font-size", 18+"px");
+	button3.style("border", "0");
+  //button3.style("font-weight", "bold"); // bold
+  button3.style("font-family", "Helvetica,sans-serif");
