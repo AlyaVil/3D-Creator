@@ -309,3 +309,90 @@ function setup() {
 	button3.style("border", "0");
   //button3.style("font-weight", "bold"); // bold
   button3.style("font-family", "Helvetica,sans-serif");
+
+
+  _node = new RenderNode();
+
+  _shader = createShader(lightVert, lightFrag);
+  _node.registRenderSystem('light', _shader);
+
+ 
+  _drawer = new Drawer();
+  _tessellator = new Tessellator();
+  _tessellator.setPaintHue(0.05, 0.15);
+  
+
+  document.oncontextmenu = (e) => {
+    e.preventDefault();
+  }
+
+  buttonLayer = new BackgroundManager();
+
+  
+
+  createConfigButtons();
+
+  buttonLayer.addLayer().addLayer();
+  preDrawingButtons();
+  preDrawingExplainTexts();
+  createSliderImage();
+  
+
+  focusX = 0;
+  focusY = 0;
+  focusZ = height * 0.5;
+  posR = height * 0.5 * Math.sqrt(3);
+  defaultPosR = height * 0.5 * Math.sqrt(3);
+
+	// this shader creates the sky background
+  _shader = createShader(skyVert, skyFrag);
+  _node.registRenderSystem('sky', _shader);
+  _node.use('sky', 'plane')
+       .registAttribute('aPosition', [-1,1,0,1,1,0,-1,-1,0,1,-1,0], 3);
+  
+  eyeVector = createVector();
+  toCenterVector = createVector();
+  sideVector = createVector();
+  upVector = createVector();
+
+  // 90,130,170,240,280,320,360.
+  
+
+  /*
+  let p = [];
+  for(let i = 0; i < 800; i++){
+    const t = TAU*i/800;
+    const x = 160*(cos(16*t)-0.75*sin(9*t));
+    const y = 160*(sin(16*t)-0.75*cos(9*t));
+    p.push(x, y, 0);
+  }
+  _drawer.contours.push(p);
+  p=[];
+  */
+  //_drawer.contours = getContoursFromText(hui,"", 240, 5, CENTER, CENTER);
+  //_drawer.contours.push([80,80,0,-80,80,0,-80,-80,0,80,-80,0]);
+
+  /*
+  let p = [];
+  p.push(-200,-200,0,-100,-200,0,-100,200,0,0,200,0,
+         0,-200,0,100,-200,0,100,200,0,200,200,0,
+         200,100,0,-200,100,0,-200,0,0,200,0,0,200,-100,0,-200,-100,0);
+    _drawer.contours.push(p);
+ 
+ 
+  //_drawer.contours.push([-100,-100,0,100,-100,0,100,100,0,-100,100,0]);
+  //_drawer.contours.push([0.1,-100,0,0.1,100,0,-0.1,100,0,-0.1,-100,0]);
+  //_drawer.contours.push([100,35-0.1,0,100,35+0.1,0,-100,-78-0.1,0,-100,-78+0.1,0]);
+  //_drawer.contours.push([23-0.1,-100,0,23+0.1,-100,0,79+0.1,100,0,79-0.1,100,0]);
+ 
+}
+
+// --------------------------------------------------------------- //
+// main loop.
+
+let performanceRatio = 0;
+
+function draw(){
+  background(255);
+  const start = millis();
+  _drawer.update();
