@@ -396,3 +396,58 @@ function draw(){
   background(255);
   const start = millis();
   _drawer.update();
+
+
+ //_drawer.img.setLayer(0)
+  //           .draw("background", [0])
+  //           .setLayer(1)
+  //           .draw("clear");
+
+
+  if(cameraFlag){ moveCamera(); }
+  eyeVector.set(posR*sin(posTheta)*sin(posPhi)+focusX,
+                posR*sin(posTheta)*cos(posPhi)+focusY,
+                posR*cos(posTheta)+focusZ);
+  camera(eyeVector.x, eyeVector.y, eyeVector.z, focusX, focusY, focusZ, 0, 0, -1);
+  const m = _gl.uMVMatrix.copy().mat4;
+  toCenterVector.set(-m[2], -m[6], -m[10]);
+  sideVector.set(m[0], m[4], m[8]);
+  upVector.set(m[1], m[5], m[9]);
+
+
+  gl.disable(gl.DEPTH_TEST);
+  camera(0, 0, height * 0.5 * Math.sqrt(3.0), 0, 0, 0, 0, 1, 0);
+  if (_skbg == 1){
+	_node.use('sky', 'plane')
+       .setAttribute()
+       .setUniform("uResolution", [width, height])
+       .setUniform("uFov", Math.PI / 3)
+       .setUniform("uAspect", width / height)
+       .setUniform("uEye", [eyeVector.x, eyeVector.y, eyeVector.z])
+       .setUniform("uToCenter", [toCenterVector.x, toCenterVector.y, toCenterVector.z])
+       .setUniform("uSide", [sideVector.x, sideVector.y, sideVector.z])
+       .setUniform("uUp", [upVector.x, upVector.y, upVector.z])
+       .drawArrays(gl.TRIANGLE_STRIP)
+       .clear();
+	}
+  gl.enable(gl.DEPTH_TEST);
+  
+  _drawer.display();
+  _node.useRenderSystem('light')
+       .setDirectionalLight(_RGB(1), 0, 0, -1)
+       .setAmbientLight(_RGB(0.25));
+  
+
+  camera(eyeVector.x, eyeVector.y, eyeVector.z, focusX, focusY, focusZ, 0, 0, -1);
+
+  _tessellator.setTranslate(focusX, focusY, focusZ);
+  _tessellator.setRotation(-posPhi, -posTheta);
+  _tessellator.display();
+  
+  _drawer.img.setLayer(0)
+             .draw("clear")
+             .setLayer(1)
+             .draw("clear");
+             /*.draw("text", [performanceRatio.toFixed(3), 16, 16]);*/
+
+  _drawer.display();
