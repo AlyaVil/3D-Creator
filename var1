@@ -497,3 +497,55 @@ function preDrawingButtons(){
   }
   const btn = buttons[18];
   buttonLayer.draw("image", [btn.img, btn.x, btn.y]);
+
+ let csd = createGraphics(20, 100);
+  csd.colorMode(HSB, 100);
+  csd.noStroke();
+  for(let i = 0; i < 100; i++){
+    csd.fill(i, 100, 100);
+    csd.rect(0, i, 100, 1);
+  }
+  buttonLayer.draw("image", [csd, 5, 60]);
+  buttonLayer.draw("image", [csd, 5, 180]);
+}
+
+function preDrawingExplainTexts(){
+  buttonLayer.setLayer(1)
+             .draw("fill", [0])
+             .draw("noStroke")
+             .draw("textSize", [24])
+             .draw("textAlign", [CENTER, CENTER]);
+             /*.draw("text", ["drawing: mouseLeftDown", width*0.5,height*0.45])
+             .draw("text", ["create: mouseRightDown", width*0.5,height*0.45+30]);*/
+}
+
+// strokeHilight
+function createConfigButton(rcp, strokeHilight = false){
+  let gr = createGraphics(rcp.w, rcp.h);
+  gr.colorMode(HSB, 100);
+  gr.textSize(18);
+  gr.textAlign(LEFT, CENTER);
+  gr.noStroke();
+  gr.fill(...rcp.col);
+  gr.rect(0, 0, rcp.w, rcp.h);
+  gr.fill(0);
+  if(strokeHilight){ gr.fill(64); }
+  gr.text(rcp.name, rcp.w*0.01, rcp.h*0.5);
+  buttons.push({img:gr, x:rcp.x, y:rcp.y});
+}
+
+function createConfigButtons(){
+  for(let i = 0; i < 20; i++){ 
+  
+    const strokeHilight = ((i>=4 && i<=10) || (i==18));
+    createConfigButton(buttonRecipe[i], strokeHilight);
+  }
+}
+
+function saver(){
+  save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
+}
+
+function inter(){
+  _if = 1 - _if;
+}
