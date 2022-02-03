@@ -451,3 +451,49 @@ function draw(){
              /*.draw("text", [performanceRatio.toFixed(3), 16, 16]);*/
 
   _drawer.display();
+
+const modeId = _tessellator.getMode();
+  const activeModeButtonId = 11 + modeId;
+  const activeModeButton = buttons[activeModeButtonId];
+  const actionId = _tessellator.getAction();
+  const activeActionButtonId = 15 + actionId;
+  const activeActionButton = buttons[activeActionButtonId];
+  
+  
+  buttonLayer.setLayer(0)
+             .draw("clear")
+             .setLayer(2)
+             .draw("clear")
+             .draw("image", [activeModeButton.img, activeModeButton.x, activeModeButton.y])
+             .draw("image", [activeActionButton.img, activeActionButton.x, activeActionButton.y]);
+  
+  if(cameraFlag){
+    buttonLayer.draw("image", [buttons[19].img, buttons[19].x, buttons[19].y]);
+  }
+  
+  
+  sliderUpdate();
+  const hues = _tessellator.getPaintHue();
+  const upperY = 60 + hues.u * 100;
+  const lowerY = 180 + hues.l * 100;
+  buttonLayer.draw("image", [sliderImg, 3, upperY])
+             .draw("image", [sliderImg, 3, lowerY]);
+  
+  if (_if == 1) buttonLayer.display();  // allows hiding of button interface
+  
+  // step.
+  const end = millis();
+  performanceRatio = (end - start) * 60 / 1000;
+}
+
+// --------------------------------------------------------------- //
+// config.
+
+function preDrawingButtons(){
+  buttonLayer.setLayer(1);  
+  for(let i = 0; i < 11; i++){ 
+    const btn = buttons[i];
+    buttonLayer.draw("image", [btn.img, btn.x, btn.y]);
+  }
+  const btn = buttons[18];
+  buttonLayer.draw("image", [btn.img, btn.x, btn.y]);
