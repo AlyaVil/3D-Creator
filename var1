@@ -549,3 +549,54 @@ function saver(){
 function inter(){
   _if = 1 - _if;
 }
+
+function disableScroll() { 
+  // Get the current page scroll position 
+  scrollTop = window.pageYOffset || document.documentElement.scrollTop; 
+  scrollLeft = window.pageXOffset || document.documentElement.scrollLeft, 
+  
+  // if any scroll is attempted, set this to the previous value 
+  window.onscroll = function() { 
+    window.scrollTo(scrollLeft, scrollTop); 
+  }; 
+} 
+
+function skywhite(){
+  _skbg = 1 - _skbg;
+}
+
+function createSliderImage(){
+  sliderImg = createGraphics(24, 10);
+  sliderImg.stroke(255);
+  sliderImg.strokeWeight(2);
+  sliderImg.fill(128);
+  sliderImg.rect(1, 1, 22, 8);
+}
+
+function sliderUpdate(){
+  if(!mouseIsPressed){ return; }
+  const hues = _tessellator.getPaintHue();
+  let uHue = hues.u;
+  let lHue = hues.l;
+  if(sliderFlag[0]){
+    uHue = constrain(uHue + (mouseY - pmouseY)*0.01, 0, 1);
+  }
+  if(sliderFlag[1]){
+    lHue = constrain(lHue + (mouseY - pmouseY)*0.01, 0, 1);
+  }
+  _tessellator.setPaintHue(uHue, lHue);
+}
+
+// --------------------------------------------------------------- //
+// texture float usability check.
+// RenderNode
+
+// texture float
+function textureFloatCheck(){
+  let ext;
+  ext = gl.getExtension('OES_texture_float') || this._renderer.getExtension('OES_texture_half_float');
+  if(ext == null){
+    alert('float texture not supported');
+    return;
+  }
+}
