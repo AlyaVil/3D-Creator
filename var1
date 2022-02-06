@@ -600,3 +600,65 @@ function textureFloatCheck(){
     return;
   }
 }
+
+// Uint32Array
+function Uint32ArrayCheck(){
+  if (!gl.getExtension('OES_element_index_uint')) {
+    throw new Error('Unable to render a 3d model with > 65535 triangles. Your web browser does not support the WebGL Extension OES_element_index_uint.');
+  }
+}
+
+// --------------------------------------------------------------- //
+// global functions.
+
+// framebuffer.
+// framebuffer
+// attribute
+// RenderNode
+
+
+ 
+  let textureFormat = null;
+  if(!format){
+    textureFormat = gl.UNSIGNED_BYTE;
+  }else{
+    textureFormat = format;
+  }
+
+
+  let frameBuffer = gl.createFramebuffer();
+
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);
+
+ 
+  let depthRenderBuffer = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderBuffer);
+
+
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
+
+
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
+
+
+  let fTexture = gl.createTexture();
+
+  
+  gl.bindTexture(gl.TEXTURE_2D, fTexture);
+
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, textureFormat, null);
+
+ 
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTexture, 0);
+
+
+  gl.bindTexture(gl.TEXTURE_2D, null);
+  gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
