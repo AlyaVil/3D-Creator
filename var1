@@ -718,3 +718,63 @@ function create_ibo(data, type){
 
   return ibo;
 }
+
+// utility.
+
+function _RGB(r, g, b){
+  if(arguments.length === 1){
+    g = r;
+    b = r;
+  }
+  return {r:r, g:g, b:b};
+}
+
+function _HSV(h, s, v){
+  h = constrain(h, 0, 1);
+  s = constrain(s, 0, 1);
+  v = constrain(v, 0, 1);
+  let _r = constrain(abs(((6 * h) % 6) - 3) - 1, 0, 1);
+  let _g = constrain(abs(((6 * h + 4) % 6) - 3) - 1, 0, 1);
+  let _b = constrain(abs(((6 * h + 2) % 6) - 3) - 1, 0, 1);
+  _r = _r * _r * (3 - 2 * _r);
+  _g = _g * _g * (3 - 2 * _g);
+  _b = _b * _b * (3 - 2 * _b);
+  let result = {};
+  result.r = v * (1 - s + s * _r);
+  result.g = v * (1 - s + s * _g);
+  result.b = v * (1 - s + s * _b);
+  return result;
+}
+
+// --------------------------------------------------------------- //
+// UnionFind.
+
+// 0,1,2,...,n-1をquery
+
+function getUnionFind(n, query){
+  let parent = [];
+  let rank = [];
+  for(let i = 0; i < n; i++){
+    parent.push(i);
+    rank.push(0);
+  }
+  function Find(a){
+    if(parent[a] == a){
+      return a;
+    }else{
+      parent[a] = Find(parent[a]);
+      return parent[a];
+    }
+  }
+  function Union(a, b){
+    let aRoot = Find(a);
+    let bRoot = Find(b);
+    if(rank[aRoot] > rank[bRoot]){
+      parent[bRoot] = aRoot;
+    }else if(rank[bRoot] > rank[aRoot]){
+      parent[aRoot] = bRoot;
+    }else if(aRoot != bRoot){
+      parent[bRoot] = aRoot;
+      rank[aRoot] = rank[aRoot] + 1;
+    }
+  }
