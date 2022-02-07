@@ -662,3 +662,59 @@ function Uint32ArrayCheck(){
   gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+
+ return {f : frameBuffer, d : depthRenderBuffer, t : fTexture};
+}
+
+// vbo
+function create_vbo(data){
+
+  let vbo = gl.createBuffer();
+
+  
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+
+ 
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+
+  
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  return vbo;
+}
+
+// attribute
+function set_attribute(attributes){
+  
+  for(let name of Object.keys(attributes)){
+    const attr = attributes[name];
+   
+    gl.bindBuffer(gl.ARRAY_BUFFER, attr.vbo);
+
+    // attributeLocation
+    gl.enableVertexAttribArray(attr.location);
+
+    // attributeLocation
+    gl.vertexAttribPointer(attr.location, attr.stride, gl.FLOAT, false, 0, 0);
+  }
+}
+
+// ibo
+function create_ibo(data, type){
+  // type:Uint16ArrayUint32Array.
+ 
+  let ibo = gl.createBuffer();
+
+  
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+
+
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new (type)(data), gl.STATIC_DRAW);
+
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+
+  return ibo;
+}
