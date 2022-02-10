@@ -825,3 +825,57 @@ class RenderSystem{
     this.topologies = {};
     this.uniformLocations = {};
   }
+
+getName(){
+    return this.name;
+  }
+  registTopology(topologyName){
+    if(this.topologies[topologyName] !== undefined){ return; }
+    this.topologies[topologyName] = new Topology(topologyName);
+  }
+  getProgram(){
+    return this.program;
+  }
+  getShader(){
+    return this.shader;
+  }
+  getTopology(topologyName){
+    return this.topologies[topologyName];
+  }
+  registUniformLocation(uniformName){
+    if(this.uniformLocations[uniformName] !== undefined){ return; }
+    this.uniformLocations[uniformName] = gl.getUniformLocation(this.program, uniformName);
+  }
+  setTexture(uniformName, _texture, locationID){
+    gl.activeTexture(gl.TEXTURE0 + locationID);
+    gl.bindTexture(gl.TEXTURE_2D, _texture);
+    gl.uniform1i(this.uniformLocations[uniformName], locationID);
+  }
+}
+
+// --------------------------------------------------------------- //
+// RenderNode class.
+// RenderSystem
+
+class RenderNode{
+  constructor(){
+    this.renderSystems = {};
+    this.currentRenderSystem = undefined;
+    this.currentShader = undefined;
+    this.currentTopology = undefined;
+    this.useTextureFlag = false;
+    this.tfMatrix = new p5.Matrix(); 
+  
+  }
+  registRenderSystem(renderSystemName, _shader){
+    if(this.renderSystems[renderSystemName] !== undefined){ return; }
+    this.renderSystems[renderSystemName] = new RenderSystem(renderSystemName, _shader);
+  }
+  use(renderSystemName, topologyName){
+   
+    if(this.renderSystems[renderSystemName] == undefined){ return; }
+    this.useRenderSystem(renderSystemName);
+    this.registTopology(topologyName); 
+    this.useTopology(topologyName);
+    return this;
+  }
