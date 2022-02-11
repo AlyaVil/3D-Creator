@@ -879,3 +879,50 @@ class RenderNode{
     this.useTopology(topologyName);
     return this;
   }
+
+ useRenderSystem(renderSystemName){
+    
+    this.currentRenderSystem = this.renderSystems[renderSystemName];
+    this.currentShader = this.currentRenderSystem.getShader();
+    this.currentShader.useProgram();
+    return this;
+  }
+  registTopology(topologyName){
+    // currentProgram
+    this.currentRenderSystem.registTopology(topologyName);
+  }
+  useTopology(topologyName){
+
+    this.currentTopology = this.currentRenderSystem.getTopology(topologyName);
+    return this;
+  }
+  registAttribute(attributeName, data, stride){
+    this.currentTopology.registAttribute(this.currentRenderSystem.getProgram(), attributeName, data, stride);
+    return this;
+  }
+  registAttributes(attrData){
+    for(let attrName of Object.keys(attrData)){
+      const attr = attrData[attrName];
+      this.registAttribute(attrName, attr.data, attr.stride);
+    }
+    return this;
+  }
+  setAttribute(){
+    // topology
+    this.currentTopology.setAttribute();
+    return this;
+  }
+  registIndexBuffer(data, type){
+    // Uint16Array. Uint32Array
+    if(type === undefined){ type = Uint16Array; }
+    this.currentTopology.registIndexBuffer(data, type);
+    return this;
+  }
+  bindIndexBuffer(){
+    this.currentTopology.bindIndexBuffer();
+    return this;
+  }
+  registUniformLocation(uniformName){
+    this.currentRenderSystem.registUniformLocation(uniformName);
+    return this;
+  }
