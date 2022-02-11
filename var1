@@ -926,3 +926,53 @@ class RenderNode{
     this.currentRenderSystem.registUniformLocation(uniformName);
     return this;
   }
+
+ setTexture(uniformName, _texture, locationID){
+    this.currentRenderSystem.setTexture(uniformName, _texture, locationID);
+    this.useTextureFlag = true; // 1true
+    return this;
+  }
+  setUniform(uniformName, data){
+    this.currentShader.setUniform(uniformName, data);
+    return this;
+  }
+  clear(){
+    /
+    // topology
+    this.currentTopology.clear();
+    // texture
+    if(this.useTextureFlag){
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      this.useTextureFlag = false;
+    }
+  }
+  setMatrixStandard(uMV){
+    // uMVuMVMatrix
+    const sh = this.currentShader;
+    sh.setUniform('uProjectionMatrix', _gl.uPMatrix.mat4);
+    sh.setUniform('uModelViewMatrix', uMV.mat4);
+    sh.setUniform('uViewMatrix', _gl._curCamera.cameraMatrix.mat4);
+    _gl.uNMatrix.inverseTranspose(uMV);
+    sh.setUniform('uNormalMatrix', _gl.uNMatrix.mat3);
+  }
+  setMatrix(tf){
+    // uMVuPuViewuNormal(uNormal)
+    let uMV = _gl.uMVMatrix.copy();
+    if(tf !== undefined){
+      this.transform(tf, uMV); // tf。tr, rotX, rotY, rotZ, scale.
+      // rotAxis
+    }
+    this.setMatrixStandard(uMV);
+    return this;
+  }
+  transform(tf, uMV){
+   。
+    for(let command of tf){
+      const name = Object.keys(command)[0];
+      const value = command[name];
+      switch(name){
+        case "tr":
+         
+          if(value.length === 1){ value.push(value[0], value[0]); }
+          uMV.translate(value);
+          break;
