@@ -976,3 +976,54 @@ class RenderNode{
           if(value.length === 1){ value.push(value[0], value[0]); }
           uMV.translate(value);
           break;
+
+// rotX
+        case "rotX":
+          uMV.rotateX(value); break;
+        case "rotY":
+          uMV.rotateY(value); break;
+        case "rotZ":
+          uMV.rotateZ(value); break;
+        case "rotAxis":
+          
+          uMV.rotate(...value); break;
+        case "scale":
+         
+          if(value.length === 1){ value.push(value[0], value[0]); }
+          uMV.scale(...value); break;
+      }
+    }
+  }
+  setVertexColor(){
+    const sh = this.currentShader;
+    sh.setUniform('uUseColorFlag', 0);
+    return this;
+  }
+  setMonoColor(col, a = 1){
+    const sh = this.currentShader;
+    sh.setUniform('uUseColorFlag', 1);
+    sh.setUniform('uMonoColor', [col.r, col.g, col.b, a]);
+    return this;
+  }
+  setDirectionalLight(col, x, y, z){
+    const sh = this.currentShader;
+    sh.setUniform('uUseDirectionalLight', true);
+    sh.setUniform('uDirectionalDiffuseColor', [col.r, col.g, col.b]);
+    sh.setUniform('uLightingDirection', [x, y, z]);
+    return this;
+  }
+  setAmbientLight(col){
+    const sh = this.currentShader;
+    sh.setUniform('uAmbientColor', [col.r, col.g, col.b]);
+    return this;
+  }
+  setPointLight(col, x, y, z, att0 = 1, att1 = 0, att2 = 0){
+    // att0,att1,att2attenuation（
+    
+    const sh = this.currentShader;
+    sh.setUniform('uUsePointLight', true);
+    sh.setUniform('uPointLightDiffuseColor', [col.r, col.g, col.b]);
+    sh.setUniform('uPointLightLocation', [x, y, z]);
+    sh.setUniform('uAttenuation', [att0, att1, att2]);
+    return this;
+  }
