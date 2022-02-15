@@ -1027,3 +1027,59 @@ class RenderNode{
     sh.setUniform('uAttenuation', [att0, att1, att2]);
     return this;
   }
+drawArrays(mode, first, count){
+ 
+    if(arguments.length == 1){
+      first = 0;
+      count = this.currentTopology.getAttrSize();
+    }
+    gl.drawArrays(mode, first, count);
+    return this;
+  }
+  drawElements(mode, count){
+    // 大きい場合はgl.UNSIGNED_INTを指定
+    const _type = this.currentTopology.getIBOType();
+    const type = (_type === Uint16Array ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT);
+   
+    if(count === undefined){ count = this.currentTopology.getIBOSize(); }
+    gl.drawElements(mode, count, type, 0);
+    return this;
+  }
+  flush(){
+    gl.flush();
+    return this;
+  }
+}
+
+// --------------------------------------------------------------- //
+// Topology class.
+// topologyset
+class Topology{
+  constructor(name){
+    this.name = name;
+    this.attributes = {}; // Object.keysdelete a[name]
+    this.attrSize = 0;
+    this.ibo = undefined;
+    this.iboType = undefined;
+    this.iboSize = 0;
+  }
+  getName(){
+    return this.name;
+  }
+  getAttrSize(){
+    return this.attrSize;
+  }
+  getIBOType(){
+    return this.iboType;
+  }
+  getIBOSize(){
+    return this.iboSize;
+  }
+  registAttribute(program, attributeName, data, stride){
+    let attr = {};
+    attr.vbo = create_vbo(data);
+    attr.location = gl.getAttribLocation(program, attributeName);
+    attr.stride = stride;
+    this.attrSize = Math.floor(data.length / stride); // attr
+    this.attributes[attributeName] = attr;
+  }
