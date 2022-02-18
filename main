@@ -1218,3 +1218,48 @@ function spherical(size, detailH = 8, detailV = 8){
     f.push(ru, rd, lu);
     f.push(lu, rd, ld);
   }
+ let k = detailV - 2;
+  const bottom = Math.floor(v.length/3) - 1;
+  for(let i = 1; i <= detailH - 1; i++){
+    f.push(i + k * detailH, bottom, i + 1 + k * detailH);
+  }
+  f.push((k + 1) * detailH, bottom, 1 + k * detailH);
+
+  let n = getNormals(v, f);
+  return {v:v, f:f, n:n};
+}
+
+function parametricSurface(data, detailS = 2, detailT = 2){
+  const curveFunc = data.func;
+  const {s0, s1, t0, t1} = data;
+
+  if(detailS < 2){ detailS = 2; }
+  if(detailT < 2){ detailT = 2; }
+  detailS = Math.floor(detailS);
+  detailT = Math.floor(detailT);
+  let v = [];
+  let s, t, p;
+  for(let k = 0; k <= detailT; k++){
+    for(let i = 0; i <= detailS; i++){
+      s = map(i, 0, detailS, s0, s1);
+      t = map(k, 0, detailT, t0, t1);
+      p = curveFunc(s, t);
+      v.push(p.x, p.y, p.z);
+    }
+  }
+
+  let f = [];
+  let lu, ru, ld, rd;
+  for(let k = 0; k < detailT; k++){
+    for(let i = 0; i < detailS; i++){
+      lu = i + (detailS + 1) * k;
+      ru = i + 1 + (detailS + 1) * k;
+      ld = lu + (detailS + 1);
+      rd = ru + (detailS + 1);
+      f.push(ru, rd, lu, lu, rd, ld);
+    }
+  }
+  let n = getNormals(v, f);
+
+  return {v:v, f:f, n:n};
+}
