@@ -1263,3 +1263,41 @@ function parametricSurface(data, detailS = 2, detailT = 2){
 
   return {v:v, f:f, n:n};
 }
+
+function donut(longRadius, shortRadius, longDetail, shortDetail){
+  
+  let _data = {};
+  _data.func = (s, t) => { return {x:(longRadius+shortRadius*sin(t))*sin(s), y:(80+20*sin(t))*cos(s), z:shortRadius*cos(t)}; }
+  _data.s0 = -Math.PI;
+  _data.s1 = Math.PI;
+  _data.t0 = -Math.PI;
+  _data.t1 = Math.PI;
+  return parametricSurface(_data, longDetail, shortDetail);
+}
+
+  let _data = {};
+  _data.func = (s, t) => { return {x:r*sin(s), y:r*cos(s), z:t}; }
+  _data.s0 = -Math.PI;
+  _data.s1 = Math.PI;
+  _data.t0 = h * 0.5;
+  _data.t1 = -h * 0.5;
+  return parametricSurface(_data, detailR, detailH);
+}
+
+
+function polygon(r, detail = 3){
+  if(detail < 3){ detail = 3; }
+  detail = Math.floor(detail);
+  let v = [];
+  v.push(0, 0, 0);
+  for(let i = 0; i < detail; i++){
+    v.push(r * cos(TAU * i / detail), r * sin(TAU * i / detail), 0);
+  }
+  let f = [];
+  for(let i = 1; i < detail; i++){
+    f.push(0, i, i+1);
+  }
+  f.push(0, detail, 1);
+  let n = getNormals(v, f);
+  return {v:v, f:f, n:n};
+}
