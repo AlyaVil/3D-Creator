@@ -1301,3 +1301,52 @@ function polygon(r, detail = 3){
   let n = getNormals(v, f);
   return {v:v, f:f, n:n};
 }
+class BackgroundManager{
+  constructor(){
+    const id = BackgroundManager.id++;
+    this.name = "bgManager" + id;
+    this.layers = [];
+    this.layers.push(createGraphics(width, height));
+    this.currentLayerId = 0;
+   
+    let _shader = this.getBGShader();
+    _node.registRenderSystem(this.name, _shader);
+    _node.use(this.name, 'plane')
+         .registAttribute('aPosition', [-1,1,0,1,1,0,-1,-1,0,1,-1,0], 3)
+         .registUniformLocation('uTex');
+    this.texture = new p5.Texture(_gl, this.layers[0]);
+  }
+  getBGShader(){
+    // bgShader.
+    const bgVert=
+    "precision mediump float;" +
+    "attribute vec3 aPosition;" +
+    "void main(){" +
+    "  gl_Position = vec4(aPosition, 1.0);" +
+    "}";
+    const bgFrag=
+    "precision mediump float;" +
+    "uniform sampler2D uTex;" +
+    "uniform vec2 uResolution;" +
+    "void main(){" +
+    "  vec2 p = gl_FragCoord.xy / uResolution.xy;" +
+    "  p.y = 1.0 - p.y;" +
+    "  vec4 tex = texture2D(uTex, p);" +
+    "  if(tex.a < 0.5){ discard; }" + 
+    "  gl_FragColor = tex;" +
+    "}";
+    return createShader(bgVert, bgFrag);
+  }
+  addLayer(){
+    this.layers.push(createGraphics(width, height));
+    return this;
+  }
+  removeLayer(id){
+    if(id === 0){ return; } 
+    this.layers.splice(id, 1);
+  }
+  setLayer(id){
+
+    this.currentLayerId = id;
+    return this;
+  }
