@@ -1350,3 +1350,54 @@ class BackgroundManager{
     this.currentLayerId = id;
     return this;
   }
+
+ getLayer(id){
+    
+    return this.layers[id];
+  }
+  draw(command, args = []){
+    this.layers[this.currentLayerId][command](...args);
+    return this;
+  }
+  display(){
+    gl.disable(gl.DEPTH_TEST);
+
+    for(let i = 1; i < this.layers.length; i++){
+      this.layers[0].image(this.layers[i], 0, 0);
+    }
+    this.texture.update();
+    camera(0, 0, height * 0.5 * Math.sqrt(3), 0, 0, 0, 0, 1, 0);
+    _node.use(this.name, 'plane')
+         .setAttribute()
+         .setTexture('uTex', this.texture.glTex, 0) 
+         .setUniform("uResolution", [width, height])
+         .drawArrays(gl.TRIANGLE_STRIP)
+         .clear(); 
+    gl.enable(gl.DEPTH_TEST);
+  }
+}
+
+BackgroundManager.id = 0; 
+
+
+
+class Drawer{
+  constructor(){
+    this.img = new BackgroundManager();
+    this.img.addLayer().addLayer();
+    this.prepareBase();
+    this.prepareCVS();
+    this.points = [];
+    this.contours = [];
+    this.active = false;
+  }
+  getContours(){
+    return this.contours;
+  }
+  reset(){
+  
+    this.points = [];
+    this.contours = [];
+    this.img.setLayer(2).draw("clear");
+    //this.cvs.clear();
+  }
