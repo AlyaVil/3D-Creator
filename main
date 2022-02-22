@@ -1401,3 +1401,56 @@ class Drawer{
     this.img.setLayer(2).draw("clear");
     //this.cvs.clear();
   }
+prepareBase(){
+    this.img.setLayer(1)
+            .draw("background", [0])
+            .draw("noStroke")
+            .draw("fill", [255])
+            .draw("textSize", [16])
+            .draw("textAlign", [LEFT, TOP]);
+  }
+  prepareCVS(){
+    this.img.setLayer(2)
+            .draw("translate", [width * 0.5, height * 0.5])
+            .draw("stroke", [0])
+            .draw("strokeWeight", [2]);
+  }
+  addPoint(){
+    const l = this.points.length;
+    if(l > 1){
+    const lastPoint = this.points[l - 1];
+    const nextX = mouseX - width * 0.5;
+    const nextY = mouseY - height * 0.5;
+    if(mag(lastPoint.x - nextX, lastPoint.y - nextY) < MINIMUM_DISTANCE){ return; }
+    }
+    this.points.push({x:mouseX - width * 0.5, y:mouseY - height * 0.5});
+    if(this.points.length > 1){
+      const p = this.points;
+      const l = p.length;
+      const a = p[l-1];
+      const b = p[l-2];
+      this.img.setLayer(2)
+              .draw("line", [a.x, a.y, b.x, b.y]);
+    }
+  }
+  activate(){
+    this.active = true;
+  }
+  isActive(){
+    return this.active;
+  }
+  addContour(){
+    const p = this.points;
+    const l = p.length;
+    if(l > 2){
+      this.img.setLayer(2)
+              .draw("line", [p[l-1].x, p[l-1].y, p[0].x, p[0].y]);
+    }
+    let q = [];
+    for(let i = 0; i < l; i++){
+      q.push(p[i].x, p[i].y, 0);
+    }
+    this.contours.push(q);
+    this.points = [];
+    this.active = false;
+  }
