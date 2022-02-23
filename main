@@ -1454,3 +1454,48 @@ prepareBase(){
     this.points = [];
     this.active = false;
   }
+update(){
+    if(this.active && !this.tessFlag){
+      this.addPoint();
+    }
+  }
+  display(){
+    this.img.display();
+  }
+}
+
+class Tessellator{
+  constructor(){
+    this.tesses = [];
+    this.h = 16;
+    this.upperPaintHue = 0.0; 
+    this.lowerPaintHue = 0.0;
+    this.mode = MODE_BOARD;
+    this.action = ACTION_ROLLING;
+    
+    this.translate = createVector(0, 0, 0);
+    this.rotationZ = 0;
+    this.rotationX = 0;
+  }
+  setMode(newMode){
+    this.mode = newMode;
+  }
+  getMode(){
+    return this.mode;
+  }
+  setAction(newAction){
+    this.action = newAction;
+  }
+  getAction(){
+    return this.action;
+  }
+  setTranslate(x, y, z){
+    this.translate.set(x, y, z);
+  }
+  setRotation(rotZ = 0, rotX = 0){
+    this.rotationZ = rotZ;
+    this.rotationX = rotX;
+  }
+  setHeight(h){
+    this.h = h;
+  }
