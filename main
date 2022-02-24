@@ -1499,3 +1499,54 @@ class Tessellator{
   setHeight(h){
     this.h = h;
   }
+setPaintHue(uHue, lHue){
+    if(uHue === undefined){
+      uHue = 0.0;
+    }
+    if(lHue === undefined){
+      lHue = uHue;
+    }
+    this.upperPaintHue = constrain(uHue, 0.0, 1.0);
+    this.lowerPaintHue = constrain(lHue, 0.0, 1.0);
+  }
+  getPaintHue(){
+    return {u:this.upperPaintHue, l:this.lowerPaintHue};
+  }
+  createTessellation(contours){
+    // mode
+    const mode = this.mode;
+    let boardMesh;
+    if(mode === MODE_BOARD){
+      boardMesh = getBoardMeshFromContours(contours, this.h);
+      this.createTess(boardMesh);
+    }
+    if(mode === MODE_BEVEL){
+      boardMesh = getBevelMeshFromContours(contours, 8, 8, this.h);
+      this.createTess(boardMesh);
+    }
+    if(mode === MODE_DIMPLE){
+      boardMesh = getDimpleMeshFromContours(contours, 6, 6, this.h);
+      this.createTess(boardMesh);
+    }
+    if(mode === MODE_SPLIT){
+      let boardMeshes = getIslandBoardMeshesFromContours(contours, this.h);
+      for(let mesh of boardMeshes){
+        this.createTess(mesh);
+      }
+    }
+  }
+  createTess(mesh){
+  
+    if(mesh == undefined){ return; }
+    
+    const {r:ur, g:ug, b:ub} = _HSV(this.upperPaintHue, 1, 1);
+    const {r:lr, g:lg, b:lb} = _HSV(this.lowerPaintHue, 1, 1);
+    let vertexColors = [];
+    
+ 
+    const VN = mesh.v.length / 3; 
+    let g = createVector(0, 0, 0);
+    for(let i = 0; i < VN; i++){
+      g.x += mesh.v[3*i]; g.y += mesh.v[3*i+1]; g.z += mesh.v[3*i+2];
+    }
+    g.x /= VN; g.y /= VN; g.z /= VN; 
