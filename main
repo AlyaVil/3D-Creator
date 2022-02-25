@@ -1550,3 +1550,59 @@ setPaintHue(uHue, lHue){
       g.x += mesh.v[3*i]; g.y += mesh.v[3*i+1]; g.z += mesh.v[3*i+2];
     }
     g.x /= VN; g.y /= VN; g.z /= VN; 
+
+for(let i = 0; i < VN; i++){
+   
+      mesh.v[3*i] -= g.x;
+      mesh.v[3*i+1] -= g.y;
+      mesh.v[3*i+2] -= g.z;
+     
+      const z = mesh.v[3*i+2]; 
+      if(z > this.h){
+        vertexColors.push(0.1+0.9*ur,0.1+0.9*ug,0.1+0.9*ub,1);
+        continue;
+      }
+      if(z < -this.h){
+        vertexColors.push(0.1+0.9*lr, 0.1+0.9*lg, 0.1+0.9*lb,1);
+        continue;
+      }
+      const ratio = (this.h - z) / (this.h*2); // 上が0で下が1ね
+      vertexColors.push((1-ratio)*ur + ratio*lr,
+                        (1-ratio)*ug + ratio*lg,
+                        (1-ratio)*ub + ratio*lb, 1);
+    }
+
+    const tessName = "tess" + (Tessellator.id++);
+    _node.use("light", tessName)
+         .registAttributes({
+           aPosition:{data:mesh.v, stride:3},
+           aVertexColor:{data:vertexColors, stride:4},
+           aNormal:{data:mesh.n, stride:3}})
+         .registIndexBuffer(mesh.f, Uint32Array);
+
+  
+    const actionName = this.getAction();
+    const rotationFlag = (actionName === ACTION_ROLLING || actionName === ACTION_MOVE);
+    const moveFlag = (actionName === ACTION_MOVE);
+    let p = g.copy(); // 初期位置
+    
+  
+    let {x:px, y:py, z:pz} = p;
+    const t1 = posPhi;
+    const t2 = posTheta;
+    const s = posR / defaultPosR;
+    // rotX,rotZ,translate
+    px *= s;
+    py *= s;
+    pz *= s;
+    p.y = py * cos(t2) + pz * sin(t2);
+    p.z = -py * sin(t2) + pz * cos(t2);
+    py = p.y;
+    p.x = px * cos(t1) + py * sin(t1);
+    p.y = -px * sin(t1) + py * cos(t1);
+    p.add(this.translate);
+
+    this.tesses.push(new Tessa(tessName, p, this.rotationZ, this.rotationX, s, rotationFlag, moveFlag));
+
+  }
+  delete(){
