@@ -1606,3 +1606,66 @@ for(let i = 0; i < VN; i++){
 
   }
   delete(){
+
+this.tesses.shift(0);
+  }
+  clear(){
+    // 全部消す
+    this.tesses = [];
+  }
+  display(){
+    if(this.tesses.length == 0){ return; }
+    for(let tess of this.tesses){
+      tess.update();
+      tess.display();
+    }
+  }
+}
+
+Tessellator.id = 0;
+
+// tessaはdrawer
+class Tessa{
+  constructor(name, position, rotZ = 0, rotX = 0, sizeScale = 1, rotationFlag = false, moveFlag = false){
+    this.name = name;
+    this.position = position;
+    this.sizeScale = sizeScale; 
+    this.initialPosition = position.copy(); 
+    this.rotationZ = rotZ;
+    this.rotationX = rotX;
+    this.rotationSpeedZ = 0;
+    this.rotationSpeedX = 0;
+    if(rotationFlag){ this.setRotationSpeed(); }
+    this.velocity = createVector(0, 0, 0);
+    if(moveFlag){ this.setVelocity(); }
+  }
+  setRotationSpeed(){
+    this.rotationSpeedZ = 0.015 + Math.random() * 0.035;
+    this.rotationSpeedX = 0.015 + Math.random() * 0.035;
+  }
+  setVelocity(){
+    const speed = 2 + Math.random() * 5;
+    const phi = Math.random() * TAU;
+    const theta = Math.random() * PI;
+
+    this.velocity.set(speed * Math.cos(phi) * Math.cos(theta), speed * Math.sin(phi) * Math.cos(theta), speed * Math.sin(theta));
+  }
+  update(){
+    const nextX = this.position.x + this.velocity.x;
+    const nextY = this.position.y + this.velocity.y;
+    const nextZ = this.position.z + this.velocity.z;
+    const {x:bx, y:by} = this.initialPosition;
+    if(nextX < bx-width || nextX > bx+width){
+      this.velocity.x *= -1;
+    }
+    if(nextY < by-height || nextY > by+height){
+      this.velocity.y *= -1;
+    }
+    if(nextZ < 0 || nextZ > height * 2){
+      this.velocity.z *= -1;
+    }
+    this.position.add(this.velocity);
+    
+    this.rotationZ += this.rotationSpeedZ;
+    this.rotationX += this.rotationSpeedX;
+  }
