@@ -1669,3 +1669,63 @@ class Tessa{
     this.rotationZ += this.rotationSpeedZ;
     this.rotationX += this.rotationSpeedX;
   }
+display(){
+    const {x, y, z} = this.position;
+    //const tx = this.properFrameCount * TAU / this.periodX;
+    //const tz = this.properFrameCount * TAU / this.periodZ;
+    _node.useTopology(this.name)
+         .setAttribute()
+         .setMatrix([{tr:[x, y, z]}, {rotZ:this.rotationZ}, {rotX:this.rotationX}, {scale:[this.sizeScale]}])
+         .setVertexColor()
+         .bindIndexBuffer()
+         .drawElements(gl.TRIANGLES)
+         .clear(); // clearも忘れずに
+    //this.properFrameCount++;
+  }
+}
+
+function tessellation(){
+  let ctrs = _drawer.getContours();
+  if(ctrs.length == 0){ return; }
+  let maxLength = -1;
+  for(let i = 0; i < ctrs.length; i++){
+    maxLength = max(maxLength, ctrs[i].length);
+  }
+  if(maxLength < 3){
+    _drawer.reset();
+    return;
+  }
+  // BOARD, BEVEL, DIMPLE, SEPARATEの4
+  _tessellator.createTessellation(ctrs);
+  _drawer.reset();
+}
+
+// ------------------------------------------------------------- //
+// interaction.
+
+/*let lapse = 0;    // mouse timer
+function mousePressed(){
+  if (millis() - lapse > 400){
+    save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
+    lapse = millis();
+  } 
+}*/
+
+
+function mousePressed(){
+	if (millis() - lapse > 200){
+  const mx = mouseX;
+  const my = mouseY;
+  if(mouseButton == LEFT){
+。
+    // y55～355x<125、y235～325x<235x:<235,y:55～125
+    if(((my > 55) && (my < 355) && (mx < 125)) || ((my > 235) && (my < 325) && (mx < 235)) || ((mx < 235) && (my > 55) && (my < 125))){
+      hitConfigCheck();
+			lapse = millis();
+      return;
+		}
+    }
+    if(cameraFlag){ return; }
+    _drawer.activate(); // _drawer
+    return;
+  }
