@@ -1729,3 +1729,48 @@ function mousePressed(){
     _drawer.activate(); // _drawer
     return;
   }
+ if(cameraFlag){ return; }
+  if(mouseButton == RIGHT){
+    tessellation();
+    return;
+  }
+}
+
+
+function hitConfigCheck(){
+  const hitButtonId = getHitButtonId(mouseX, mouseY);
+  if(hitButtonId >= 0){
+    buttonAction(hitButtonId);
+    return;
+  }
+  const hitSliderId = getHitSliderId(mouseX, mouseY);
+  if(hitSliderId >= 0){
+    sliderAction(hitSliderId);
+    return;
+  }
+}
+
+function mouseReleased(){
+  
+  sliderFlag[0] = false;
+  sliderFlag[1] = false;
+  if(!_drawer.isActive()){ return; }
+  _drawer.addContour();
+}
+
+function getHitButtonId(x, y){
+ 
+  for(let i = 0; i < 11; i++){
+    const rcp = buttonRecipe[i];
+    if(x > rcp.x && x < rcp.x + rcp.w && y > rcp.y && y < rcp.y + rcp.h){
+      return i;
+    }
+  }
+  const rcp = buttonRecipe[18];
+  if(x > rcp.x && x < rcp.x + rcp.w && y > rcp.y && y < rcp.y + rcp.h){
+    return 18;
+  }
+  return -1;
+}
+
+function buttonAction(id){
