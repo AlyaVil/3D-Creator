@@ -1774,3 +1774,50 @@ function getHitButtonId(x, y){
 }
 
 function buttonAction(id){
+if(id == 0){ _tessellator.delete(); return; }
+  if(id == 1){ _tessellator.clear(); _drawer.reset(); return; }
+  if(id == 2){ tessellation(); return; }
+  if(id == 3){ _drawer.reset(); return; }
+  if(id == 4){ _tessellator.setMode(MODE_BOARD); return; }
+  if(id == 5){ _tessellator.setMode(MODE_BEVEL); return; }
+  if(id == 6){ _tessellator.setMode(MODE_DIMPLE); return; }
+  if(id == 7){ _tessellator.setMode(MODE_SPLIT); return; }
+  if(id == 8){ _tessellator.setAction(ACTION_FIX); return; }
+  if(id == 9){ _tessellator.setAction(ACTION_ROLLING); return; }
+  if(id == 10){ _tessellator.setAction(ACTION_MOVE); return; }
+  if(id == 18){
+
+    cameraFlag = !cameraFlag;
+    _drawer.reset();
+  }
+}
+
+function getHitSliderId(x, y){
+  if(x > 3 && x < 27 && y > 57 && y < 163){ return 0; }
+  if(x > 3 && x < 27 && y > 177 && y < 283){ return 1; }
+  return -1;
+}
+
+function sliderAction(id){
+  sliderFlag[id] = true;
+}
+
+// ------------------------------------------------------------ //
+// determinant.
+
+
+// calcDet(a,b,1,c,d,1,e,f,1)のabs2(a,b)(c,d)(e,f)
+
+function calcDet(a,b,c,d,e,f,g,h,i){
+  const det = a*(e*i-f*h) + b*(f*g-d*i) + c*(d*h-e*g);
+  return det;
+}
+
+// ------------------------------------------------------------ //
+// calculateTessellation.
+// points
+// contours
+// faces
+// contour
+
+// contours{points, contours, faces}
