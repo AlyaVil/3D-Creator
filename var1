@@ -1821,3 +1821,52 @@ function calcDet(a,b,c,d,e,f,g,h,i){
 // contour
 
 // contours{points, contours, faces}
+function calculateTessellation(ctrs){
+  // step0.triangulate
+  let tr = _gl._triangulate(ctrs);
+  // step1
+  for(let i = tr.length - 1; i >= 0; i -= 9){
+    const localArea = 0.5*Math.abs(calcDet(tr[i-8],tr[i-7],1,tr[i-5],tr[i-4],1,tr[i-2],tr[i-1],1));
+    if(localArea < 0.00001){
+      for(let k = 0; k < 9; k++){
+        tr.splice(i-k, 1);
+      }
+    }
+  }
+  const L1 = tr.length / 3; 
+  if(L1 == 0){ return undefined; }
+
+  // step2
+  let ps = [];
+  for(let i = 0; i < L1; i++){
+    ps.push({x:tr[3*i], y:tr[3*i+1], z:i});
+  }
+  // step3
+  ps.sort((p, q) => {
+    if(p.x < q.x){
+      return -1;
+    }
+    if(p.x == q.x && p.y < q.y){
+      return -1;
+    }
+    return 0;
+  });
+  // step4
+  let ps2 = new Array(L1); 
+  // step5:Point
+  let points = [];
+  let index = 0;
+  points.push({x:ps[0].x, y:ps[0].y, id:index, next:[]});
+  index++;
+  ps2[ps[0].z] = points[0];
+  for(let i = 1; i < L1; i++){
+ 
+    if(ps[i].x == ps[i-1].x && ps[i].y == ps[i-1].y){
+      ps2[ps[i].z] = ps2[ps[i-1].z];
+    }else{
+      const newPoint = {x:ps[i].x, y:ps[i].y, id:index, next:[]};
+      ps2[ps[i].z] = newPoint;
+      points.push(newPoint);
+      index++;
+    }
+  }
