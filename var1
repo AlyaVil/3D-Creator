@@ -1870,3 +1870,48 @@ function calculateTessellation(ctrs){
       index++;
     }
   }
+ const L = points.length;
+  const T1 = L1 / 3; 
+
+  // step6
+  // queryfaceIndexUnionFind
+  
+  
+  let faces = [];
+  faces.push(ps2[0].id, ps2[1].id, ps2[2].id);
+  
+  ps2[0].next.push({id:ps2[2].id, fId:0});
+  ps2[1].next.push({id:ps2[0].id, fId:0});
+  ps2[2].next.push({id:ps2[1].id, fId:0});
+  
+  let query = []; 
+  
+  for(let i = 3; i < L1; i += 3){
+    const faceIndex = floor(i/3); 
+    faces.push(ps2[i].id, ps2[i+1].id, ps2[i+2].id);
+    for(let k = 0; k < 3; k++){
+      const from = i+k;
+      const to = i+((k+2)%3);
+      let pFrom = ps2[from];
+      let pTo = ps2[to];
+      const target = pFrom.id;
+      let isDouble = false;
+      for(let m = 0; m < pTo.next.length; m++){
+        if(pTo.next[m].id === target){
+          const _fId = pTo.next[m].fId;
+          query.push([_fId, faceIndex]);
+          pTo.next.splice(m, 1);
+          isDouble = true;
+          break;
+        }
+      }
+      
+      if(!isDouble){
+        pFrom.next.push({id:pTo.id, fId:faceIndex});
+      }
+    }
+  }
+  const ufResult = getUnionFind(T1, query); 
+  const islandCount = ufResult.count; 
+  const uf = ufResult.uf; 
+  
