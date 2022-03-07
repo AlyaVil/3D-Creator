@@ -1915,3 +1915,81 @@ function calculateTessellation(ctrs){
   const islandCount = ufResult.count; 
   const uf = ufResult.uf; 
   
+  // step7
+  let debug = 0;
+  let _contours = []; 
+  let islandLevels = []; 
+
+  while(debug < 999999){
+   
+    let hasNextExists = false;
+    let hasNextPoint;
+    for(let p of points){
+      if(p.next.length > 0){
+        hasNextPoint = p;
+        hasNextExists = true;
+        break;
+      }
+    }
+  
+    if(!hasNextExists){ break; }
+    let cur = hasNextPoint;
+    let prev; 
+    
+    const startId = hasNextPoint.id;
+    let _contour = []; 
+    let islandLevel = -1;
+    _contour.push(startId);
+    while(debug < 999999){
+
+      let targetId = -1;
+
+      if(cur.next.length == 1 || prev == undefined){
+        targetId = 0;
+      }else{
+        // prev
+        const dirFromCurToPrev = atan2(prev.y - cur.y, prev.x - cur.x);
+        let dirs = [];
+        const curV = createVector(cur.x, cur.y);
+        for(let i = 0; i < cur.next.length; i++){
+          let nextP = createVector(points[cur.next[i].id].x, points[cur.next[i].id].y);
+          nextP.sub(curV);
+          nextP.rotate(-dirFromCurToPrev);
+          let _dir = atan2(nextP.y, nextP.x);
+          if(_dir<0){ _dir += TAU; }
+          dirs.push(_dir);
+        }
+        // dirs
+        let minDir = 99999;
+        for(let i = 0; i < dirs.length; i++){
+          if(dirs[i] < minDir){
+            minDir = dirs[i]; targetId = i;
+          }
+        }
+      }
+
+      const _next = cur.next[targetId];
+      const nextId = _next.id;
+      islandLevel = uf[_next.fId].lv; 
+
+      let q = points[nextId];
+      cur.next.splice(targetId, 1); // targetId
+      _contour.push(nextId);
+      
+      if(nextId == startId){
+        break;
+      }
+
+      prev = cur; 
+      cur = q;
+      debug++;
+    }
+    _contours.push(_contour);
+    islandLevels.push(islandLevel);
+    debug++;
+  }
+  //console.log(islandCount);
+  //console.log(islandLevels);
+ 
+  return {points:points, contours:_contours, faces:faces, count:islandCount, levels:islandLevels};
+}
