@@ -1993,3 +1993,8 @@ function calculateTessellation(ctrs){
  
   return {points:points, contours:_contours, faces:faces, count:islandCount, levels:islandLevels};
 }
+//Step 8
+
+let debug=0;
+
+
