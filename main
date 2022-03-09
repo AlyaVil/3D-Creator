@@ -1996,5 +1996,5 @@ function calculateTessellation(ctrs){
 //Step 8
 
 let debug=0;
-
+prev=cur;
 
