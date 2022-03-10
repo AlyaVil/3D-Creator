@@ -1993,8 +1993,51 @@ function calculateTessellation(ctrs){
  
   return {points:points, contours:_contours, faces:faces, count:islandCount, levels:islandLevels};
 }
-//Step 8
+function getContoursFlower(r, m, n, ratio, detail = 400){
+  
+  let result = [];
+  for(let i = 0; i < detail; i++){
+    const t = TAU * i / detail;
+    const x = r * ((1-ratio)*cos(m*t) - ratio*sin(n*t));
+    const y = r * ((1-ratio)*sin(m*t) - ratio*cos(n*t));
+    result.push(x, y, 0);
+  }
+  return [result];
+}
 
-let debug=0;
-prev=cur;
+// ------------------------------------------------------------ //
+// getContoursFromText.
+
+
+function getContoursFromText(ft, txt, size, detail, h_align, v_align){
+  const bounds = ft.textBounds(txt, 0, 0, size);
+  let x, y;
+  switch(h_align){
+    case LEFT:
+      x = -bounds.x; break;
+    case CENTER:
+      x = -bounds.x - bounds.w * 0.5; break;
+    case RIGHT:
+      x = -bounds.x - bounds.w; break;  
+  }
+  switch(v_align){
+    case TOP:
+      y = -bounds.y; break;
+    case CENTER:
+      y = -bounds.y - bounds.h * 0.5; break;
+    case BOTTOM:
+      y = -bounds.y - bounds.h; break;
+  }
+  let contours = [];
+  let contour = [];
+  let currentPos = createVector();
+  const data = ft.font.getPath(txt, x, y, size).commands;
+
+  for(let i = 0; i < data.length; i++){
+    const cmd = data[i];
+    switch(cmd.type){
+      case "M":
+        contour = [];
+        currentPos.set(cmd.x, cmd.y);
+        contour.push(currentPos.copy()); break;
 
