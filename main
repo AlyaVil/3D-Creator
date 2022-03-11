@@ -2040,4 +2040,37 @@ function getContoursFromText(ft, txt, size, detail, h_align, v_align){
         contour = [];
         currentPos.set(cmd.x, cmd.y);
         contour.push(currentPos.copy()); break;
+ case "L":
+        if(currentPos.x == cmd.x && currentPos.y == cmd.y) continue; 
+        currentPos.set(cmd.x, cmd.y);
+        contour.push(currentPos.copy()); break;
+      case "C":
+        for(let k = 0; k < detail; k++){
+          contour.push(new p5.Vector(bezierPoint(currentPos.x, cmd.x1, cmd.x2, cmd.x, k / detail), bezierPoint(currentPos.y, cmd.y1, cmd.y2, cmd.y, k / detail)));
+        }
+        currentPos.set(cmd.x, cmd.y);
+        contour.push(currentPos.copy()); break;
+      case "Q":
+        for(let k = 0; k < detail; k++){
+          contour.push(new p5.Vector(bezierPoint(currentPos.x, cmd.x1, cmd.x1, cmd.x, k / detail), bezierPoint(currentPos.y, cmd.y1, cmd.y1, cmd.y, k / detail)));
+        }
+        currentPos.set(cmd.x, cmd.y);
+        contour.push(currentPos.copy()); break;
+      case "Z":
+        contour.pop();
+        // vec2
+        contours.push(vec2ToArray(contour));
+    }
+  }
+  return contours;
+}
+
+// vec2
+function vec2ToArray(seq){
+  let result = [];
+  for(let p of seq){
+    result.push(p.x, p.y, 0);
+  }
+  return result;
+}
 
