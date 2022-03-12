@@ -2073,4 +2073,47 @@ function vec2ToArray(seq){
   }
   return result;
 }
+function getBoardMeshFromContours(contours, z1, z2){
+  if(z2 === undefined){ z2 = -z1; }
+  let tessData = calculateTessellation(contours);
+  if(tessData == undefined){ return undefined; }
+
+  let points = tessData.points;
+  let _contours = tessData.contours;
+  let faces = tessData.faces;
+
+  let vertices = [];
+
+  for(let p of points){
+    vertices.push(p.x, p.y, z1);
+  }
+  for(let p of points){
+    vertices.push(p.x, p.y, z2);
+  }
+
+  const L = points.length;
+  const F = faces.length;
+
+  for(let i = 0; i < F; i+=3){
+    faces.push(L+faces[i], L+faces[i+2], L+faces[i+1]);
+  }
+ 
+  let len = 2*L;
+  for(let _contour of _contours){
+    const startP = points[_contour[0]];
+    vertices.push(startP.x, startP.y, z1);
+    vertices.push(startP.x, startP.y, z2);
+    len += 2;
+    for(let i = 1; i < _contour.length; i++){
+      
+      const rightP = points[_contour[i]];
+      vertices.push(rightP.x, rightP.y, z1);
+      vertices.push(rightP.x, rightP.y, z2);
+      len += 2;
+      faces.push(len-4, len-2, len-3, len-3, len-2, len-1);
+    }
+  }
+  let vertexNormals = getNormals(vertices, faces);
+  return {v:vertices, f:faces, n:vertexNormals};
+}
 
