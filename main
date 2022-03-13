@@ -2116,4 +2116,50 @@ function getBoardMeshFromContours(contours, z1, z2){
   let vertexNormals = getNormals(vertices, faces);
   return {v:vertices, f:faces, n:vertexNormals};
 }
+function getIslandBoardMeshesFromContours(contours, z1, z2){
+  if(z2 === undefined){ z2 = -z1; }
+  let tessData = calculateTessellation(contours);
+  if(tessData == undefined){ return undefined; }
 
+  let ps = tessData.points;
+  let _ctrs = tessData.contours;
+
+  const count = tessData.count;
+  let islands = [];
+  for(let i = 0; i < count; i++){ islands.push([]); }
+  let levelMap = tessData.levels;
+  for(let k = 0; k < _ctrs.length; k++){
+    const lv = levelMap[k];
+    const contourIds = _ctrs[k];
+    let ctr = [];
+ 
+    for(let h = 0; h < contourIds.length-1; h++){
+      const id = contourIds[h];
+      ctr.push(ps[id].x, ps[id].y, 0);
+    }
+    islands[lv].push(ctr);
+  }
+
+  let meshes = [];
+  for(let lv = 0; lv < count; lv++){
+    const island = islands[lv];
+    let _tess = calculateTessellation(island);
+    if(_tess == undefined){ continue; }
+    let points = _tess.points;
+    let _contours = _tess.contours;
+    let faces = _tess.faces;
+
+    let vertices = [];
+    for(let p of points){
+      vertices.push(p.x, p.y, z1);
+    }
+    for(let p of points){
+      vertices.push(p.x, p.y, z2);
+    }
+    // faces
+    const L = points.length;
+    const F = faces.length;
+
+    for(let i = 0; i < F; i+=3){
+      faces.push(L+faces[i], L+faces[i+2], L+faces[i+1]);
+    }
