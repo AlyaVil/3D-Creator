@@ -2308,4 +2308,52 @@ function getBevelMeshFromContours(contours, bv, bh, z1, z2){
       faces.push(len-4, len-2, len-3, len-3, len-2, len-1);
     }
   }
+   let innerPointsArray = [];
+  let innerContours = [];
+  for(let contour of _contours){
+    let innerPoints = [];
+    let innerContour = [];
+    const l = contour.length;
+    for(let i = 0; i < l-1; i++){
+
+      const curP = points[contour[i]];
+      const nextP = points[contour[i+1]];
+      const prevP = points[contour[(i>0 ? i-1 : l-2)]];
+      // prevP→curPcurP→next
+      const prevN = createVector(curP.y - prevP.y, -(curP.x - prevP.x)).normalize();
+      const nextN = createVector(nextP.y - curP.y, -(nextP.x - curP.x)).normalize();
+      const bn = p5.Vector.add(prevN, nextN).normalize().mult(bv);
+      innerPoints.push({x:curP.x + bn.x, y:curP.y + bn.y, from:curP});
+      innerContour.push(curP.x + bn.x, curP.y + bn.y, 0);
+    }
+    innerPointsArray.push(innerPoints);
+    innerContours.push(innerContour);
+  }
+
+  for(let innerPoints of innerPointsArray){
+    const inn = innerPoints[0];
+    const from = inn.from;
+    vertices.push(inn.x, inn.y, z1+bh);
+    vertices.push(from.x, from.y, z1);
+    vertices.push(from.x, from.y, z2);
+    vertices.push(inn.x, inn.y, z2-bh);
+    len += 4;
+    for(let i = 1; i <= innerPoints.length; i++){
+   
+      const rightInn = innerPoints[(i<innerPoints.length ? i:0)];
+      const rightFrom = rightInn.from;
+      vertices.push(rightInn.x, rightInn.y, z1+bh);
+      vertices.push(rightFrom.x, rightFrom.y, z1);
+      vertices.push(rightFrom.x, rightFrom.y, z2);
+      vertices.push(rightInn.x, rightInn.y, z2-bh);
+      len += 4;
+    
+      faces.push(len-8, len-4, len-7, len-7, len-4, len-3);
+      faces.push(len-6, len-2, len-5, len-5, len-2, len-1);
+    }
+  }
   
+  
+  let innerTessData = calculateTessellation(innerContours);
+  let pts = innerTessData.points;
+  let fs = innerTessData.faces;
