@@ -2357,3 +2357,42 @@ function getBevelMeshFromContours(contours, bv, bh, z1, z2){
   let innerTessData = calculateTessellation(innerContours);
   let pts = innerTessData.points;
   let fs = innerTessData.faces;
+const pl = pts.length;
+  
+  for(let i = 0; i < pl; i++){
+    vertices.push(pts[i].x, pts[i].y, z1+bh);
+  }
+  for(let i = 0; i < pl; i++){
+    vertices.push(pts[i].x, pts[i].y, z2-bh);
+  }
+
+  for(let i = 0; i < fs.length; i += 3){
+    faces.push(fs[i]+len, fs[i+1]+len, fs[i+2]+len);
+    faces.push(fs[i]+len+pl, fs[i+2]+len+pl, fs[i+1]+len+pl);
+  }
+ 
+  let vertexNormals = getNormals(vertices, faces);
+  return {v:vertices, f:faces, n:vertexNormals};
+}
+
+
+function getDimpleMeshFromContours(contours, b1, b2, z1, z2){
+  if(z2 === undefined){ z2 = -z1; }
+  let tessData = calculateTessellation(contours);
+
+  let points = tessData.points;
+  let _contours = tessData.contours;
+  let _faces = tessData.faces; 
+  
+  let vertices = [];
+  let faces = [];
+  let len = 0;
+  
+  for(let p of points){
+    vertices.push(p.x, p.y, z2);
+    len++;
+  }
+  const F = _faces.length;
+  for(let i = 0; i < F; i+=3){
+    faces.push(_faces[i], _faces[i+2], _faces[i+1]);
+  }
