@@ -2442,3 +2442,52 @@ function getDimpleMeshFromContours(contours, b1, b2, z1, z2){
     vertices.push(from.x, from.y, z2);
     vertices.push(inn.x, inn.y, z2);
     len += 4;
+for(let i = 1; i <= innerPoints.length; i++){
+  
+      const rightInn = innerPoints[(i<innerPoints.length ? i:0)];
+      const rightFrom = rightInn.from;
+      vertices.push(rightInn.x, rightInn.y, z1+bh);
+      vertices.push(rightFrom.x, rightFrom.y, z1);
+      vertices.push(rightFrom.x, rightFrom.y, z2);
+      vertices.push(rightInn.x, rightInn.y, z2-bh);
+      len += 4;
+      。
+      faces.push(len-8, len-4, len-7, len-7, len-4, len-3);
+      faces.push(len-6, len-2, len-5, len-5, len-2, len-1);
+    }
+  }
+  
+  let innerTessData = calculateTessellation(innerContours);
+  let pts = innerTessData.points;
+  let fs = innerTessData.faces;
+  
+  const pl = pts.length;
+  
+  for(let i = 0; i < pl; i++){
+    vertices.push(pts[i].x, pts[i].y, z1+bh);
+  }
+  for(let i = 0; i < pl; i++){
+    vertices.push(pts[i].x, pts[i].y, z2-bh);
+  }
+
+  for(let i = 0; i < fs.length; i += 3){
+    faces.push(fs[i]+len, fs[i+1]+len, fs[i+2]+len);
+    faces.push(fs[i]+len+pl, fs[i+2]+len+pl, fs[i+1]+len+pl);
+  }
+
+  let vertexNormals = getNormals(vertices, faces);
+  return {v:vertices, f:faces, n:vertexNormals};
+}
+
+
+function getDimpleMeshFromContours(contours, b1, b2, z1, z2){
+  if(z2 === undefined){ z2 = -z1; }
+  let tessData = calculateTessellation(contours);
+
+  let points = tessData.points;
+  let _contours = tessData.contours;
+  let _faces = tessData.faces;
+  
+  let vertices = [];
+  let faces = [];
+  let len = 0;
