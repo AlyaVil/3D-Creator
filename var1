@@ -2491,3 +2491,51 @@ function getDimpleMeshFromContours(contours, b1, b2, z1, z2){
   let vertices = [];
   let faces = [];
   let len = 0;
+
+for(let p of points){
+    vertices.push(p.x, p.y, z2);
+    len++;
+  }
+  const F = _faces.length;
+  for(let i = 0; i < F; i+=3){
+    faces.push(_faces[i], _faces[i+2], _faces[i+1]);
+  }
+ 
+  for(let _contour of _contours){
+    const startP = points[_contour[0]];
+    vertices.push(startP.x, startP.y, z1);
+    vertices.push(startP.x, startP.y, z2);
+    len += 2;
+    for(let i = 1; i < _contour.length; i++){
+      
+      const rightP = points[_contour[i]];
+      vertices.push(rightP.x, rightP.y, z1);
+      vertices.push(rightP.x, rightP.y, z2);
+      len += 2;
+      faces.push(len-4, len-2, len-3, len-3, len-2, len-1);
+    }
+  }
+  
+
+  let innerPointsArray = [];
+  let innerContours = [];
+  for(let contour of _contours){
+    let innerPoints = [];
+    let innerContour = [];
+    const l = contour.length;
+    for(let i = 0; i < l-1; i++){
+
+      const curP = points[contour[i]];
+      const nextP = points[contour[i+1]];
+      const prevP = points[contour[(i>0 ? i-1 : l-2)]];
+  
+      const prevN = createVector(curP.y - prevP.y, -(curP.x - prevP.x)).normalize();
+      const nextN = createVector(nextP.y - curP.y, -(nextP.x - curP.x)).normalize();
+      const bn = p5.Vector.add(prevN, nextN).normalize().mult(b1);
+      innerPoints.push({x:curP.x + bn.x, y:curP.y + bn.y, from:curP});
+      innerContour.push(curP.x + bn.x, curP.y + bn.y, 0);
+    }
+    innerPointsArray.push(innerPoints);
+    innerContours.push(innerContour);
+  }
+  
